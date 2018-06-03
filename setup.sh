@@ -15,7 +15,7 @@ cat vimrc.txt > ~/.vimrc
 
 sudo apt-get install xsel
 echo 'alias pbcopy="xsel -i -b"' >> ~/.zshrc
-echo 'alias bppaste="xsel -o -b"' >> ~/.zshrc
+echo 'alias pbpaste="xsel -o -b"' >> ~/.zshrc
 
 sudo apt-get install git curl tmux fbterm
 sudo apt-get install golang
