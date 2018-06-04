@@ -18,6 +18,11 @@ echo 'alias pbcopy="xsel -i -b"' >> ~/.zshrc
 echo 'alias pbpaste="xsel -o -b"' >> ~/.zshrc
 
 sudo apt-get install git curl tmux fbterm
+
+curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+
+source ~/.zplug/init.zsh
+
 sudo apt-get install golang
 mkdir ~/go
 echo 'export GOPATH="$HOME/go"' >> ~/.zshrc
@@ -35,4 +40,3 @@ source $HOME/.cargo/env
 echo 'export PATH="$PATH:$HOME/.cargo/bin"' >> ~/.zshrc
 
 sudo apt-get install xserver-xorg xbase-clients xterm twm rxvt-ml
-
