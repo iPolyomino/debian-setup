@@ -8,10 +8,10 @@ sudo apt-get install zsh zsh-doc
 sudo chsh -s $(which zsh)
 
 sudo apt-get install emacs24 emacs24-el
-cat emacs.txt > ~/.emacs
+cat emacs.txt >> ~/.emacs
 
 sudo apt-get install vim
-cat vimrc.txt > ~/.vimrc
+cat vimrc.txt >> ~/.vimrc
 
 sudo apt-get install xsel
 echo 'alias pbcopy="xsel -i -b"' >> ~/.zshrc
