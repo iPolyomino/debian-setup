@@ -17,11 +17,13 @@ sudo apt-get install xsel
 echo 'alias pbcopy="xsel -i -b"' >> ~/.zshrc
 echo 'alias pbpaste="xsel -o -b"' >> ~/.zshrc
 
-sudo apt-get install git curl tmux fbterm
+sudo apt-get install git curl tmux fbterm gawk
 
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
-source ~/.zplug/init.zsh
+cat zplug.txt >> ~/.zshrc
+source ~/.zshrc
+zplug install
 
 sudo apt-get install golang
 mkdir ~/go
