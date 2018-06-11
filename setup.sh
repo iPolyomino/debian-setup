@@ -17,7 +17,7 @@ sudo apt-get install xsel
 echo 'alias pbcopy="xsel -i -b"' >> ~/.zshrc
 echo 'alias pbpaste="xsel -o -b"' >> ~/.zshrc
 
-sudo apt-get install git curl tmux fbterm gawk
+sudo apt-get install git curl tmux fbterm gawk dnsutils
 
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 
