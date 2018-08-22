@@ -14,8 +14,8 @@ sudo apt-get install vim
 cat vimrc.txt >> ~/.vimrc
 
 sudo apt-get install xsel
-echo 'alias pbcopy="xsel -i -b"' >> ~/.zshrc
-echo 'alias pbpaste="xsel -o -b"' >> ~/.zshrc
+echo 'alias pbcopy="xsel -ib"' >> ~/.zshrc
+echo 'alias pbpaste="xsel -ob"' >> ~/.zshrc
 
 sudo apt-get install git curl tmux fbterm gawk dnsutils alsa-utlis
 
@@ -34,6 +34,7 @@ source ~/.zshrc
 go get -u github.com/junegunn/fzf
 go get -u github.com/motemen/ghq
 cat ghq-fzf-setup.txt >> ~/.zshrc
+source ~/.zshrc
 
 curl https://sh.rustup.rs -sSf | sh
 source $HOME/.cargo/env
@@ -51,5 +52,9 @@ source ~/.zshrc
 pyenv install 2.7.15
 pyenv install anaconda3-5.2.0
 pyenv global anaconda3-5.2.0
+
+curl https://raw.githubusercontent.com/github/gitignore/master/Global/Linux.gitignore >> ~/.gitignore_global
+
+cat gitconfig.txt >> ~/.gitconfig
 
 sudo apt-get install xserver-xorg xbase-clients xterm twm rxvt-ml
