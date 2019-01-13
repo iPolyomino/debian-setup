@@ -67,3 +67,27 @@ https://wiki.debian.org/WiFi/HowToUse
 sudo ifup wlp61s0
 ```
 
+## environment setup
+
+```bash
+sudo apt-get install git
+git clone https://github.com/iPolyomino/dotfiles
+git checkout pure-debian
+~/dotfiles/link.sh
+```
+
+### zsh setup
+
+```bash
+sudo apt-get install zsh zsh-doc
+chsh -s /usr/bin/zsh
+```
+
+### anyenv setup
+
+```zsh
+git clone https://github.com/riywo/anyenv ~/.anyenv
+echo 'export PATH="$HOME/.anyenv/bin:$PATH"' >> ~/.zprofile
+echo 'eval "$(anyenv init -)"' >> ~/.zprofile
+exec $SHELL -l
+```
