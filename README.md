@@ -89,6 +89,9 @@ chsh -s /usr/bin/zsh
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
 ```
 
+Helpful URL
+https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
+
 Add this to `.zshrc`
 
 ```zsh
@@ -120,4 +123,123 @@ git clone https://github.com/riywo/anyenv ~/.anyenv
 echo 'export PATH="$HOME/.anyenv/bin:$PATH"' >> ~/.zprofile
 echo 'eval "$(anyenv init -)"' >> ~/.zprofile
 exec $SHELL -l
+```
+
+```zsh
+sudo apt-get install build-essential
+```
+
+#### pyenv setup
+
+```zsh
+sudo apt-get -y install gcc make libssl-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libffi-dev
+anyenv install pyenv
+exec $SHELL -l
+pyenv install 2.7.15
+pyenv install 3.7.2
+pyenv install anaconda3-5.3.1
+pyenv global 3.7.2
+```
+
+#### phpenv setup
+
+```zsh
+sudo apt-get install libcurl4-nss-dev libcurl4-gnutls-dev libjpeg-dev re2c libxml2-dev libtidy-dev libxslt-dev libmcrypt-dev  libreadline-dev libpng-dev
+anyenv install phpenv
+exec $SHELL -l
+phpenv install 7.2.11
+phpenv global 7.2.11
+```
+
+#### ndenv setup
+
+```zsh
+anyenv install ndenv
+exec $SHELL -l
+ndenv install v10.15.0
+ndenv global v10.15.0
+```
+
+optional setup
+
+```zsh
+npm i -g prettier
+```
+
+#### goenv setup
+
+```zsh
+anyenv install goenv
+exec $SHELL -l
+goenv install 1.11.4
+mkdir ~/go
+echo 'export GOPATH="$HOME/go"' >> ~/.zshrc
+echo 'export PATH="$PATH:$HOME/go/bin"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+optional setup
+
+```zsh
+go get -u github.com/junegunn/fzf
+go get -u github.com/motemen/ghq
+```
+
+Add this to `~/.zshrc`
+
+```
+function ghq-fzf() {
+  local selected_dir=$(ghq list | fzf --query="$LBUFFER")
+
+  if [ -n "$selected_dir" ]; then
+    BUFFER="cd $(ghq root)/${selected_dir}"
+    zle accept-line
+  fi
+
+  zle reset-prompt
+}
+
+zle -N ghq-fzf
+bindkey "^g" ghq-fzf
+```
+
+Add this to `~/.gitconfig`
+
+```
+[alias]
+	co = checkout
+	br = branch
+	st = status
+
+[core]
+	excludesfile = ~/.gitignore_global
+
+[ghq]
+	root = ~/go/src/
+
+[user]
+	email = macbookpromacbookpromacbookpro@gmail.com
+	name = iPolyomino
+```
+
+Add this to `~/.gitignore_global`
+
+```
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
+
+# VisualStudioCode
+
+.vscode/*
 ```
