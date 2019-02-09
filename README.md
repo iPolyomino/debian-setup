@@ -3,7 +3,7 @@
 Do the following with the root.
 
 ```bash
-apt-get install sudo vim tmux emacs25 w3m
+apt-get install sudo vim tmux emacs25 w3m curl
 ```
 
 ## sudoers setup
