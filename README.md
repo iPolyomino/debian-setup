@@ -71,9 +71,8 @@ sudo ifup wlp61s0
 
 ```bash
 sudo apt-get install git
-git clone https://github.com/iPolyomino/dotfiles
-git checkout pure-debian
-~/dotfiles/link.sh
+git clone -b pure-debian https://github.com/iPolyomino/dotfiles
+./dotfiles/link.sh
 ```
 
 ### zsh setup
