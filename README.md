@@ -242,3 +242,29 @@ Add this to `~/.gitignore_global`
 
 .vscode/*
 ```
+
+### If you want to install with `apt-get`
+
+_python_
+
+```
+sudo apt-get install python3 python3-dev python3-dev
+```
+
+_php_
+
+```
+sudo apt-get install php
+```
+
+_node_
+
+```
+sudo apt-get install nodejs npm
+```
+
+_go_
+
+```
+sudo apt-get install golang-go
+```
