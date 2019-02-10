@@ -86,34 +86,13 @@ chsh -s /usr/bin/zsh
 
 ```zsh
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
+
+zplug install
+zplug load
 ```
 
 Helpful URL
 https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
-
-Add this to `.zshrc`
-
-```zsh
-# zplug settings
-source ~/.zplug/init.zsh
-
-zplug "zplug/zplug", hook-build:'zplug --self-manage'
-zplug "mafredri/zsh-async"
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-autosuggestions"
-zplug "zsh-users/zsh-completions"
-zplug "chrissicool/zsh-256color"
-zplug "zsh-users/zsh-syntax-highlighting"
-
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-    echo; zplug install
-  fi
-fi
-
-zplug load
-```
 
 ### anyenv setup
 
@@ -202,47 +181,6 @@ zle -N ghq-fzf
 bindkey "^g" ghq-fzf
 ```
 
-Add this to `~/.gitconfig`
-
-```
-[alias]
-	co = checkout
-	br = branch
-	st = status
-
-[core]
-	excludesfile = ~/.gitignore_global
-
-[ghq]
-	root = ~/go/src/
-
-[user]
-	email = macbookpromacbookpromacbookpro@gmail.com
-	name = iPolyomino
-```
-
-Add this to `~/.gitignore_global`
-
-```
-*~
-
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
-
-# KDE directory preferences
-.directory
-
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
-
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
-
-# VisualStudioCode
-
-.vscode/*
-```
-
 ### If you want to install with `apt-get`
 
 _python_
@@ -267,4 +205,10 @@ _go_
 
 ```
 sudo apt-get install golang-go
+```
+
+## spacemacs setup
+
+```
+git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 ```
