@@ -212,3 +212,9 @@ sudo apt-get install golang-go
 ```
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 ```
+
+## additional packages
+
+```
+sudo apt-get install xsel firefox-esr
+```
