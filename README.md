@@ -95,6 +95,12 @@ zplug load
 Helpful URL
 https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
 
+### rust setup
+
+```zsh
+curl https://sh.rustup.rs -sSf | sh
+```
+
 ### anyenv setup
 
 ```zsh
