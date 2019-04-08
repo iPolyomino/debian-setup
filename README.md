@@ -68,6 +68,14 @@ https://wiki.debian.org/WiFi/HowToUse
 sudo ifup wlp61s0
 ```
 
+## nocaps setup
+
+Edit `/etc/default/keyboard`
+
+```
+XKBOPTIONS="ctrl:nocaps"
+```
+
 ## environment setup
 
 ```bash
