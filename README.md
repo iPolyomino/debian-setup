@@ -9,6 +9,7 @@ apt-get install sudo vim tmux emacs25 w3m curl
 ## sudoers setup
 
 ```bash
+export EDITOR=/usr/bin/vim
 visudo
 ```
 
