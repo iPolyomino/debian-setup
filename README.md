@@ -244,6 +244,6 @@ Edit config file
 
 ```
 Host github.com
-	HostName github.com
+    HostName github.com
     IdentityFile ~/.ssh/github_rsa
 ```
