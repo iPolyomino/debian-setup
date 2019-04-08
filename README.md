@@ -44,6 +44,7 @@ network={
     pairwise=CCMP TKIP
     group=CCMP TKIP WEP104 WEP40
     psk="YOUR_PASSWORD"
+    priority=1
 }
 ```
 
@@ -185,36 +186,50 @@ bindkey "^g" ghq-fzf
 
 _python_
 
-```
+```zsh
 sudo apt-get install python3 python3-dev python3-dev
 ```
 
 _php_
 
-```
+```zsh
 sudo apt-get install php
 ```
 
 _node_
 
-```
+```zsh
 sudo apt-get install nodejs npm
 ```
 
 _go_
 
-```
+```zsh
 sudo apt-get install golang-go
 ```
 
 ## spacemacs setup
 
-```
+```zsh
 git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 ```
 
 ## additional packages
 
-```
+```zsh
 sudo apt-get install xsel firefox-esr
+```
+
+## generate ssh-key
+
+```zsh
+ssh-keygen -t rsa -b 4096 -C "foobar@polyomino.jp"
+```
+
+Edit config file
+
+```
+Host github.com
+	HostName github.com
+    IdentityFile ~/.ssh/github_rsa
 ```
