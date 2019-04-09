@@ -248,3 +248,10 @@ Host github.com
     HostName github.com
     IdentityFile ~/.ssh/github_rsa
 ```
+
+## skk
+
+```
+sudo apt-get install ddskk skkdic uim uim-skk dbskkd-cdb skkdic-cdb
+echo "(define default-im-name 'skk)" > ~/.uim
+```
