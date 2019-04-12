@@ -4,7 +4,9 @@ http://www.lsnl.jp/~ohsaki/software/xpywm/
 
 ```zsh
 wget http://www.lsnl.jp/~ohsaki/software/xpywm/Makefile
-sudo make install
+su
+make install
+exit
 make fetch-skelton
 cp skel.xinitrc ~/.xinitrc
 cp skel.Xdefaults ~/.Xdefaults
