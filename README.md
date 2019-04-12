@@ -81,7 +81,7 @@ XKBOPTIONS="ctrl:nocaps"
 
 ```bash
 sudo apt-get install git
-git clone -b pure-debian https://github.com/iPolyomino/dotfiles
+git clone -b pure-debian https://github.com/iPolyomino/dotfiles ~/.dotfiles
 ./dotfiles/link.sh
 ```
 
