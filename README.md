@@ -255,3 +255,9 @@ Host github.com
 sudo apt-get install ddskk skkdic uim uim-skk dbskkd-cdb skkdic-cdb
 echo "(define default-im-name 'skk)" > ~/.uim
 ```
+
+## mew
+
+```
+sudo apt-get install mew
+```
