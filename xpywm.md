@@ -19,6 +19,8 @@ Edit `/etc/X11/Xwrapper.config`
 allowed_users=anybody
 ```
 
+Start X Window System
+
 ```zsh
 startx
 ```
