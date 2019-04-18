@@ -260,4 +260,9 @@ echo "(define default-im-name 'skk)" > ~/.uim
 
 ```
 sudo apt-get install mew
+sudo apt-get install hyperestraier
 ```
+
+Search the text in email.
+
+ `k + m + k + /`
