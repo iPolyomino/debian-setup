@@ -110,6 +110,15 @@ https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
 curl https://sh.rustup.rs -sSf | sh
 ```
 
+#### Racer setup
+
+```zsh
+rustup toolchain add nightly
+cargo +nightly install racer
+```
+
+https://github.com/racer-rust/racer
+
 ### anyenv setup
 
 ```zsh
