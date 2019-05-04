@@ -92,7 +92,7 @@ sudo apt-get install zsh zsh-doc
 chsh -s /usr/bin/zsh
 ```
 
-#### zplug setup 
+#### zplug setup
 
 ```zsh
 curl -sL --proto-redir -all,https https://raw.githubusercontent.com/zplug/installer/master/installer.zsh | zsh
@@ -244,6 +244,41 @@ git clone https://github.com/syl20bnr/spacemacs ~/.emacs.d
 sudo apt-get install xsel firefox-esr
 ```
 
+### Install Firefox Developer Edition
+
+Download from website
+https://www.mozilla.org/en-US/firefox/channel/desktop/
+
+```zsh
+tar -xvf firefox-*.tar.bz2
+sudo mv /home/hagi/Downloads/firefox /opt
+sudo ln -s /opt/firefox/firefox /usr/local/bin/firefox
+sudo touch /usr/share/applications/firefox-developer.desktop
+```
+
+Edit config file
+
+```
+[Desktop Entry]
+Name=Firefox Developer
+GenericName=Firefox Developer Edition
+Exec=/usr/local/bin/firefox
+Terminal=false
+Icon=/opt/firefox/browser/chrome/icons/default/default48.png
+Type=Application
+Categories=Application;Network;X-Developer;
+Comment=Firefox Developer Edition Web Browser
+```
+
+### Install bat command
+
+Download from website
+https://github.com/sharkdp/bat/releases
+
+```
+sudo dpkg -i bat_*_amd64.deb
+```
+
 ## generate ssh-key
 
 ```zsh
@@ -274,4 +309,4 @@ sudo apt-get install hyperestraier
 
 Search the text in email.
 
- `k + m + k + /`
+`k + m + k + /`
