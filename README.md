@@ -307,14 +307,47 @@ Host github.com
 
 ## skk
 
-```
+```zsh
 sudo apt-get install ddskk skkdic uim uim-skk dbskkd-cdb skkdic-cdb
 echo "(define default-im-name 'skk)" > ~/.uim
 ```
 
-## mew
+## mozc
+
+```zsh
+$ sudo apt-get install fcitx fcitx-mozc dbus-x11
+# im-config -> select "fcitx"
+$ fcitx-configtool
+# + mozc
+```
+
+Edit `~/.xinitrc`
 
 ```
+export DefaultImModule=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS=@im=fcitx
+fcitx-autostart
+```
+
+## emacs mozc
+
+```zsh
+sudo apt-get install emacs-mozc
+```
+
+Edit `~/.emacs`
+
+```
+;;mozc
+(require 'mozc)
+(setq default-input-method "japanese-mozc")
+```
+
+## mew
+
+```zsh
 sudo apt-get install mew
 sudo apt-get install hyperestraier
 ```
