@@ -11,6 +11,7 @@ make fetch-skelton
 cp skel.xinitrc ~/.xinitrc
 cp skel.Xdefaults ~/.Xdefaults
 cp skel.emacs ~/.emacs
+sudo apt-get install rxvt-unicode-256color
 ```
 
 Edit `/etc/X11/Xwrapper.config`
