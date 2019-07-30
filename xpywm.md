@@ -1,25 +1,36 @@
 # xpywm installation
 
-http://www.lsnl.jp/~ohsaki/software/xpywm/
+https://github.com/h-ohsaki/xpywm
+
+Install Python 3.7
 
 ```zsh
-wget http://www.lsnl.jp/~ohsaki/software/xpywm/Makefile
-su
-make install
-exit
-make fetch-skelton
-cp skel.xinitrc ~/.xinitrc
-cp skel.Xdefaults ~/.Xdefaults
-cp skel.emacs ~/.emacs
+sudo apt-get install build-essential
+sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev \
+    libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
+cd /usr/src
+sudo wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz
+sudo tar xzf Python-3.7.3.tgz
+cd Python-3.7.3
+sudo ./configure --enable-optimizations
+sudo make altinstall
 ```
 
-Edit `/etc/X11/Xwrapper.config`
+Install essential package for xpy*
 
-```
-allowed_users=anybody
+```zsh
+sudo apt install xorg net-tools
 ```
 
-Start X Window System
+Optional packages
+
+```zsh
+sudo apt install rxvt-unicode rxvt-unicode-256color
+```
+
+```zsh
+sudo pip3 install xpywm xpymon xpylog
+```
 
 ```zsh
 startx
