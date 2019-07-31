@@ -262,6 +262,10 @@ Download from website
 https://www.mozilla.org/en-US/firefox/channel/desktop/
 
 ```zsh
+sudo apt-get install libdbus-glib-1-2
+```
+
+```zsh
 tar -xvf firefox-*.tar.bz2
 sudo mv /home/hagi/Downloads/firefox /opt
 sudo ln -s /opt/firefox/firefox /usr/local/bin/firefox
