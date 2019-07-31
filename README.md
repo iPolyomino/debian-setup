@@ -104,6 +104,12 @@ zplug load
 Helpful URL
 https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
 
+#### vimplug setup
+
+```zsh
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
 ### rust setup
 
 ```zsh
