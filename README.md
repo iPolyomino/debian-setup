@@ -177,7 +177,8 @@ exec $SHELL -l
 goenv install 1.11.4
 mkdir ~/go
 echo 'export GOPATH="$HOME/go"' >> ~/.zshrc
-echo 'export PATH="$PATH:$HOME/go/bin"' >> ~/.zshrc
+echo 'export PATH="$PATH:$GOPATH/bin"' >> ~/.zshrc
+echo 'export PATH="$PATH:$GOPATH/1.12.7/bin"" >> ~/.zshrc
 source ~/.zshrc
 ```
 
