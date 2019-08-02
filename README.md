@@ -180,12 +180,14 @@ npm i -g prettier
 ```zsh
 anyenv install goenv
 exec $SHELL -l
-goenv install 1.11.4
+goenv install 1.12.7
 mkdir ~/go
 echo 'export GOPATH="$HOME/go"' >> ~/.zshrc
 echo 'export PATH="$PATH:$GOPATH/bin"' >> ~/.zshrc
-echo 'export PATH="$PATH:$GOPATH/1.12.7/bin"" >> ~/.zshrc
+echo 'export GOENV_DISABLE_GOPATH=1' >> ~/.zshrc
 source ~/.zshrc
+exec $SHELL -l
+goenv global 1.12.7
 ```
 
 optional setup
