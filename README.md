@@ -358,6 +358,20 @@ Edit `~/.emacs`
 (setq default-input-method "japanese-mozc")
 ```
 
+### Docker
+
+https://docs.docker.com/install/linux/docker-ce/debian/
+
+use docker without sudo
+
+```zsh
+adduser hagi docker
+```
+
+### Docker Compose
+
+https://docs.docker.com/compose/install/
+
 ## mew
 
 ```zsh
