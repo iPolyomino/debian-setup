@@ -3,20 +3,13 @@
 Do the following with the root.
 
 ```bash
-apt-get install sudo vim tmux emacs25 w3m curl
+apt install sudo vim tmux emacs25 w3m curl
 ```
 
 ## sudoers setup
 
 ```bash
-export EDITOR=/usr/bin/vim
-visudo
-```
-
-Add this
-
-```
-hagi	ALL=(ALL:ALL)	ALL
+adduser hagi sudo
 ```
 
 ---
@@ -26,7 +19,7 @@ Do the following with the user.
 ## network setup
 
 ```bash
-sudo apt-get install net-tools
+sudo apt install net-tools
 
 # https://packages.debian.org/stable/firmware-iwlwifi
 # dpkg -i PACKAGE
@@ -80,7 +73,7 @@ XKBOPTIONS="ctrl:nocaps"
 ## environment setup
 
 ```bash
-sudo apt-get install git
+sudo apt install git
 git clone -b pure-debian https://github.com/iPolyomino/dotfiles ~/.dotfiles
 ./.dotfiles/link.sh
 ```
@@ -88,7 +81,7 @@ git clone -b pure-debian https://github.com/iPolyomino/dotfiles ~/.dotfiles
 ### zsh setup
 
 ```bash
-sudo apt-get install zsh zsh-doc
+sudo apt install zsh zsh-doc
 chsh -s /usr/bin/zsh
 ```
 
@@ -135,13 +128,13 @@ exec $SHELL -l
 ```
 
 ```zsh
-sudo apt-get install build-essential
+sudo apt install build-essential
 ```
 
 #### pyenv setup
 
 ```zsh
-sudo apt-get -y install gcc make libssl-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libffi-dev
+sudo apt -y install gcc make libssl-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libffi-dev
 anyenv install pyenv
 exec $SHELL -l
 pyenv install 2.7.15
@@ -153,7 +146,7 @@ pyenv global 3.7.2
 #### phpenv setup
 
 ```zsh
-sudo apt-get install libcurl4-nss-dev libcurl4-gnutls-dev libjpeg-dev re2c libxml2-dev libtidy-dev libxslt-dev libmcrypt-dev  libreadline-dev libpng-dev
+sudo apt install libcurl4-nss-dev libcurl4-gnutls-dev libjpeg-dev re2c libxml2-dev libtidy-dev libxslt-dev libmcrypt-dev  libreadline-dev libpng-dev
 anyenv install phpenv
 exec $SHELL -l
 phpenv install 7.2.11
@@ -215,30 +208,30 @@ zle -N ghq-fzf
 bindkey "^g" ghq-fzf
 ```
 
-### If you want to install with `apt-get`
+### If you want to install with `apt`
 
 _python_
 
 ```zsh
-sudo apt-get install python3 python3-dev python3-dev
+sudo apt install python3 python3-dev python3-dev
 ```
 
 _php_
 
 ```zsh
-sudo apt-get install php
+sudo apt install php
 ```
 
 _node_
 
 ```zsh
-sudo apt-get install nodejs npm
+sudo apt install nodejs npm
 ```
 
 _go_
 
 ```zsh
-sudo apt-get install golang-go
+sudo apt install golang-go
 ```
 
 ## spacemacs setup
@@ -262,7 +255,7 @@ fc-cache -f -v
 ## additional packages
 
 ```zsh
-sudo apt-get install xsel firefox-esr
+sudo apt install xsel firefox-esr
 ```
 
 ### Install Firefox Developer Edition
@@ -271,7 +264,7 @@ Download from website
 https://www.mozilla.org/en-US/firefox/channel/desktop/
 
 ```zsh
-sudo apt-get install libdbus-glib-1-2
+sudo apt install libdbus-glib-1-2
 ```
 
 ```zsh
@@ -321,14 +314,14 @@ Host github.com
 ## skk
 
 ```zsh
-sudo apt-get install ddskk skkdic uim uim-skk dbskkd-cdb skkdic-cdb
+sudo apt install ddskk skkdic uim uim-skk dbskkd-cdb skkdic-cdb
 echo "(define default-im-name 'skk)" > ~/.uim
 ```
 
 ## mozc
 
 ```zsh
-$ sudo apt-get install fcitx fcitx-mozc dbus-x11
+$ sudo apt install fcitx fcitx-mozc dbus-x11
 # im-config -> select "fcitx"
 $ fcitx-configtool
 # + mozc
@@ -347,7 +340,7 @@ fcitx-autostart
 ## emacs mozc
 
 ```zsh
-sudo apt-get install emacs-mozc
+sudo apt install emacs-mozc
 ```
 
 Edit `~/.emacs`
@@ -375,10 +368,5 @@ https://docs.docker.com/compose/install/
 ## mew
 
 ```zsh
-sudo apt-get install mew
-sudo apt-get install hyperestraier
+sudo apt install mew
 ```
-
-Search the text in email.
-
-`k + m + k + /`
