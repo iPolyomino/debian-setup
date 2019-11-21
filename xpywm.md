@@ -1,36 +1,29 @@
 # xpywm installation
 
-https://github.com/h-ohsaki/xpywm
+xpywm, xpymon, xpylog
+https://pypi.org/project/xpywm/
+https://pypi.org/project/xpymon/
+https://pypi.org/project/xpylog/
 
-Install Python 3.7
-
-```zsh
-sudo apt-get install build-essential
-sudo apt-get install libreadline-gplv2-dev libncursesw5-dev libssl-dev \
-    libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev zlib1g-dev
-cd /usr/src
-sudo wget https://www.python.org/ftp/python/3.7.3/Python-3.7.3.tgz
-sudo tar xzf Python-3.7.3.tgz
-cd Python-3.7.3
-sudo ./configure --enable-optimizations
-sudo make altinstall
-```
-
-Install essential package for xpy*
+## install pip3
 
 ```zsh
-sudo apt install xorg net-tools
+sudo apt install python3-pip
 ```
 
-Optional packages
-
-```zsh
-sudo apt install rxvt-unicode rxvt-unicode-256color
-```
+## Install essential package for xpy\*
 
 ```zsh
-sudo pip3 install xpywm xpymon xpylog
+sudo apt install xserver-xorg xbase-clients rxvt-unicode wireless-tools
 ```
+
+## install xpywm, xpymon, xpylog
+
+```zsh
+sudo pip3 install -U xpywm xpymon xpylog
+```
+
+## start
 
 ```zsh
 startx

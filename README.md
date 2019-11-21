@@ -3,7 +3,7 @@
 Do the following with the root.
 
 ```bash
-apt install sudo vim tmux emacs25 w3m curl
+apt install sudo vim tmux emacs w3m curl
 ```
 
 ## sudoers setup
@@ -19,7 +19,7 @@ Do the following with the user.
 ## network setup
 
 ```bash
-sudo apt install net-tools
+sudo apt install wireless-tools
 
 # https://packages.debian.org/stable/firmware-iwlwifi
 # dpkg -i PACKAGE
@@ -300,7 +300,7 @@ sudo dpkg -i bat_*_amd64.deb
 ## generate ssh-key
 
 ```zsh
-ssh-keygen -t rsa -b 4096 -C "foobar@polyomino.jp"
+ssh-keygen -t ed25519
 ```
 
 Edit config file
