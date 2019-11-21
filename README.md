@@ -308,7 +308,7 @@ Edit config file
 ```
 Host github.com
     HostName github.com
-    IdentityFile ~/.ssh/github_rsa
+    IdentityFile ~/.ssh/github_ed25519
 ```
 
 ## skk
