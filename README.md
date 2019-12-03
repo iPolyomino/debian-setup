@@ -100,6 +100,7 @@ https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
 #### vimplug setup
 
 ```zsh
+sudo apt-get install vim-gtk
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 ```
 
