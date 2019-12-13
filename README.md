@@ -3,7 +3,7 @@
 Do the following with the root.
 
 ```bash
-apt install sudo vim tmux emacs w3m curl
+apt install sudo vim neovim tmux emacs w3m curl
 ```
 
 ## sudoers setup
@@ -101,6 +101,13 @@ https://github.com/zplug/zplug/blob/master/doc/guide/ja/README.md
 
 ```zsh
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
+#### dein.vim setup
+
+```zsh
+curl https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh > installer.sh
+sh ./installer.sh ~/.cache/dein
 ```
 
 ### rust setup
