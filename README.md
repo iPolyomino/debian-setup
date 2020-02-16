@@ -302,6 +302,13 @@ Categories=Application;Network;X-Developer;
 Comment=Firefox Developer Edition Web Browser
 ```
 
+Update default browser
+
+```zsh
+sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/local/bin/firefox 500
+sudo update-alternatives --config x-www-browser
+```
+
 ### Install bat command
 
 Download from website
