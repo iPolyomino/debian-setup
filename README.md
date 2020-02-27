@@ -391,3 +391,10 @@ https://docs.docker.com/compose/install/
 ```zsh
 sudo apt install mew
 ```
+
+## pdf viewer setup
+
+```zsh
+sudo apt install mupdf
+xdg-mime default mupdf.desktop application/pdf
+```
