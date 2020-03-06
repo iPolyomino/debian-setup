@@ -309,6 +309,15 @@ sudo update-alternatives --install /usr/bin/x-www-browser x-www-browser /usr/loc
 sudo update-alternatives --config x-www-browser
 ```
 
+### Install Alacritty
+
+```zsh
+git clone git@github.com:alacritty/alacritty.git
+cd alacritty
+cargo install cargo-deb
+cargo deb --install -p alacritty
+```
+
 ### Install bat command
 
 Download from website
