@@ -407,3 +407,9 @@ sudo apt install mew
 sudo apt install mupdf
 xdg-mime default mupdf.desktop application/pdf
 ```
+
+## i3 install
+
+```
+sudo apt install i3 i3status dmenu
+```
