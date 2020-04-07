@@ -352,6 +352,22 @@ echo "(define default-im-name 'skk)" > ~/.uim
 ## mozc
 
 ```zsh
+sudo apt install fcitx fcitx-mozc dbus-x11
+```
+
+```zsh
+im-config
+```
+
+Select `fcitx`
+
+```zsh
+fcitx-configtool
+```
+
+Add `mozc`
+
+```zsh
 $ sudo apt install fcitx fcitx-mozc dbus-x11
 # im-config -> select "fcitx"
 $ fcitx-configtool
@@ -376,7 +392,7 @@ sudo apt install emacs-mozc
 
 Edit `~/.emacs`
 
-```
+```elisp
 ;;mozc
 (require 'mozc)
 (setq default-input-method "japanese-mozc")
