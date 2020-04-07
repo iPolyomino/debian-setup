@@ -312,6 +312,7 @@ sudo update-alternatives --config x-www-browser
 ### Install Alacritty
 
 ```zsh
+sudo apt install cmake pkg-config libfreetype6-dev libfontconfig1-dev libxcb-xfixes0-dev python3
 git clone git@github.com:alacritty/alacritty.git
 cd alacritty
 cargo install cargo-deb
