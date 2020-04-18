@@ -14,7 +14,7 @@ fc-cache -fv
 
 ## Source Han Code JP Install
 
-Install afdko:
+Install [afdko](https://github.com/adobe-type-tools/afdko)
 
 ```zsh
 python3 -m venv afdko_env
