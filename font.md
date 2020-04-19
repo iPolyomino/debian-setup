@@ -41,3 +41,40 @@ deactivate
 ```zsh
 deactivate
 ```
+
+## Noto Color Emoji install
+
+Get emoji font from https://www.google.com/get/noto/#emoji-zsye-color
+
+```zsh
+unzip NotoColorEmoji-unhinted.zip
+mv NotoColorEmoji.ttf ~/.fonts
+fc-cache -fv
+```
+
+Edit `~/.config/fontconfig/fonts.conf`
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>serif</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>monospace</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+</fontconfig>
+```
