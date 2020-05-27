@@ -74,7 +74,7 @@ XKBOPTIONS="ctrl:nocaps"
 
 ```bash
 sudo apt install git
-git clone -b pure-debian https://github.com/iPolyomino/dotfiles ~/.dotfiles
+git clone https://github.com/iPolyomino/dotfiles ~/.dotfiles
 ./.dotfiles/link.sh
 ```
 
@@ -227,7 +227,7 @@ bindkey "^g" ghq-fzf
 _python_
 
 ```zsh
-sudo apt install python3 python3-dev python3-dev
+sudo apt install python3 python3-dev python3-pip
 ```
 
 _php_
@@ -312,7 +312,7 @@ cargo deb --install -p alacritty
 Download from website
 https://github.com/sharkdp/bat/releases
 
-```
+```zsh
 sudo dpkg -i bat_*_amd64.deb
 ```
 
@@ -415,6 +415,6 @@ xdg-mime default mupdf.desktop application/pdf
 
 ## i3 install
 
-```
+```zsh
 sudo apt install i3 i3status dmenu feh i3lock
 ```
