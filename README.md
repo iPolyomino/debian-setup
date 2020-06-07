@@ -130,12 +130,13 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ### rust setup
 
 ```zsh
-curl https://sh.rustup.rs -sSf | sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 #### Racer setup
 
 ```zsh
+sudo apt install build-essential
 rustup toolchain add nightly
 cargo +nightly install racer
 ```
@@ -145,10 +146,9 @@ https://github.com/racer-rust/racer
 ### anyenv setup
 
 ```zsh
-git clone https://github.com/riywo/anyenv ~/.anyenv
-echo 'export PATH="$HOME/.anyenv/bin:$PATH"' >> ~/.zprofile
-echo 'eval "$(anyenv init -)"' >> ~/.zprofile
+git clone https://github.com/anyenv/anyenv ~/.anyenv
 exec $SHELL -l
+anyenv install --init
 ```
 
 ```zsh
@@ -177,13 +177,13 @@ phpenv install 7.2.11
 phpenv global 7.2.11
 ```
 
-#### ndenv setup
+#### nodenv setup
 
 ```zsh
-anyenv install ndenv
+anyenv install nodenv
 exec $SHELL -l
-ndenv install v10.15.0
-ndenv global v10.15.0
+nodenv install v12.13.1
+nodenv global v12.13.1
 ```
 
 optional setup
