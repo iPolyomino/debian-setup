@@ -3,7 +3,7 @@
 Do the following with the root.
 
 ```bash
-apt install sudo vim neovim tmux emacs w3m curl
+apt install sudo vim tmux emacs w3m curl
 ```
 
 ## sudoers setup
@@ -15,6 +15,15 @@ adduser hagi sudo
 ---
 
 Do the following with the user.
+
+## neovim setup
+
+```bash
+sudo apt install fuse
+curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
+chmod u+x nvim.appimage
+sudo mv nvim.appimage /usr/local/bin/nvim
+```
 
 ## network setup
 
