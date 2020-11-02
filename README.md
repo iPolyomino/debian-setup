@@ -20,6 +20,7 @@ Do the following with the user.
 
 ```bash
 sudo apt install fuse
+sudo pip3 install nvim
 curl -LO https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
 chmod u+x nvim.appimage
 sudo mv nvim.appimage /usr/local/bin/nvim
@@ -426,4 +427,15 @@ xdg-mime default mupdf.desktop application/pdf
 
 ```zsh
 sudo apt install i3 i3status dmenu feh i3lock
+```
+
+## urxvt resize font
+
+https://github.com/simmel/urxvt-resize-font
+
+```
+mkdir ~/.urxvt/ext
+cd $_
+wget https://raw.githubusercontent.com/simmel/urxvt-resize-font/master/resize-font
+echo 'urxvt.perl-ext-common: resize-font' >> ~/.Xdefaults
 ```
