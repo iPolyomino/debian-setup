@@ -162,10 +162,14 @@ sudo apt install build-essential
 sudo apt -y install gcc make libssl-dev libbz2-dev libreadline-dev libsqlite3-dev zlib1g-dev libffi-dev
 anyenv install pyenv
 exec $SHELL -l
-pyenv install 2.7.15
-pyenv install 3.7.2
-pyenv install anaconda3-5.3.1
-pyenv global 3.7.2
+pyenv install 3.9.4
+pyenv global $_
+```
+
+optional setup
+
+```zsh
+pip3 install pynvim
 ```
 
 #### phpenv setup
@@ -175,7 +179,7 @@ sudo apt install libcurl4-nss-dev libcurl4-gnutls-dev libjpeg-dev re2c libxml2-d
 anyenv install phpenv
 exec $SHELL -l
 phpenv install 7.2.11
-phpenv global 7.2.11
+phpenv global $_
 ```
 
 #### nodenv setup
@@ -183,14 +187,15 @@ phpenv global 7.2.11
 ```zsh
 anyenv install nodenv
 exec $SHELL -l
-nodenv install v12.13.1
-nodenv global v12.13.1
+touch $(nodenv root)/default-packages
+nodenv install 14.16.1
+nodenv global $_
 ```
 
 optional setup
 
 ```zsh
-npm i -g prettier
+npm i -g firebase-tools http-server npm-check-updates neovim prettier
 ```
 
 #### goenv setup
@@ -198,14 +203,14 @@ npm i -g prettier
 ```zsh
 anyenv install goenv
 exec $SHELL -l
-goenv install 1.12.7
+goenv install 1.16.3
 mkdir ~/go
 echo 'export GOPATH="$HOME/go"' >> ~/.zshrc
 echo 'export PATH="$PATH:$GOPATH/bin"' >> ~/.zshrc
 echo 'export GOENV_DISABLE_GOPATH=1' >> ~/.zshrc
 source ~/.zshrc
 exec $SHELL -l
-goenv global 1.12.7
+goenv global 1.16.3
 ```
 
 optional setup
