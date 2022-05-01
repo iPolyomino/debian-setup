@@ -14,24 +14,32 @@ apt install sudo vim tmux curl zsh
 ## create user
 
 ```bash
-useradd -m Jack
-adduser Jack sudo
-passwd Jack
+useradd -m remochan
+adduser remochan sudo
+passwd remochan
 ```
 
 ## enable SSH Key
 
 ```zsh
-mkdir /home/Jack/.ssh
-vim /home/Jack/.ssh/authorized_keys
+mkdir /home/remochan/.ssh
+vim /home/remochan/.ssh/authorized_keys
 ```
 
 ### client setting
 
-⚠ Settings for connecting **clients**
+⚠ Settings for connecting **clients** (local computer)
 
 ```bash
 vim ~/.ssh/config
+```
+
+```
+Host snowdrop
+  HostName _._._._
+  port 22
+  user remochan
+  IdentityFile ~/.ssh/id_ed25519
 ```
 
 ## change shell
@@ -145,4 +153,44 @@ finally create symbolic link in "sites-available" directory and reload settins
 ```zsh
 sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-available/
 sudo nginx -s reload
+```
+
+## web application server settings
+
+### Spring Boot application
+
+install Java Runtime Environment(jre)
+
+```zsh
+sudo apt install rsync
+sudo apt install openjdk-11-jre
+```
+
+⚠ build application (local computer)
+
+```zsh
+./mvnw release:clean package
+rsync target/fractal-0.0.1-SNAPSHOT.jar remochan:.
+```
+
+### create reverse proxy
+
+```
+sudo vim /etc/nginx/sites-available/fractal.polyomino.jp.conf
+```
+
+### create service
+
+```
+sudo vim /etc/systemd/system/springbootapp.service
+systemctl daemon-reload
+sudo systemctl enable springbootapp.service
+sudo systemctl status
+```
+
+### start in server
+
+```
+sudo systemctl start springbootapp.service
+sudo systemctl status
 ```
