@@ -35,7 +35,7 @@ vim ~/.ssh/config
 ```
 
 ```
-Host snowdrop
+Host remochan_server
   HostName _._._._
   port 22
   user remochan
