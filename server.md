@@ -242,21 +242,21 @@ WantedBy=multi-user.target
 ```
 
 ```zsh
-systemctl daemon-reload
+sudo systemctl daemon-reload
 sudo systemctl enable springbootapp.service
 sudo systemctl status
 ```
 
 ### start in server
 
-```
+```zsh
 sudo systemctl start springbootapp.service
 sudo systemctl status
 ```
 
 ### install database
 
-```
+```zsh
 sudo apt install mariadb-server
 sudo systemctl restart springbootapp.service
 ```
