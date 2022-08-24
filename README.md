@@ -195,7 +195,8 @@ nodenv global $_
 optional setup
 
 ```zsh
-npm i -g firebase-tools http-server npm-check-updates neovim prettier
+npm i -g firebase-tools http-server npm-check-updates
+npm i -g neovim prettier typescript typescript-language-server
 ```
 
 #### goenv setup
