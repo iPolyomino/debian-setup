@@ -16,6 +16,7 @@ apt install sudo vim tmux curl zsh
 ```bash
 useradd -m remochan
 adduser remochan sudo
+# usermod -aG sudo Lacia
 passwd remochan
 ```
 
