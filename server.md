@@ -63,6 +63,15 @@ add or fix your config file
  PasswordAuthentication no
 ```
 
+CentOS
+
+```zsh
+yum install policycoreutils-python-utils
+semanage port -a -t ssh_port_t -p tcp 2222
+firewall-cmd --zone=public --add-port=2222/tcp --permanent
+firewall-cmd --reload
+```
+
 ## lock root account
 
 ```zsh
