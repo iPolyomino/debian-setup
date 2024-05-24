@@ -304,3 +304,11 @@ and add schedule
 ```
 0 0 8 * * root /usr/bin/certbot renew --quiet --post-hook "systemctl reload nginx"
 ```
+
+Raspberry Pi OS
+
+```zsh
+sudo raspi-config
+```
+- System Options → Boot / Auto Login → Console
+- Interfacing Options → SSH
