@@ -161,7 +161,7 @@ server {
 finally create symbolic link in "sites-available" directory and reload settins
 
 ```zsh
-sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-available/
+sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-enable
 sudo nginx -s reload
 ```
 
