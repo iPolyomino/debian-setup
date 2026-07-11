@@ -187,10 +187,9 @@ server {
 
 Enable the site and reload nginx:
 
-```bash
-sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
+```zsh
+sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-enable
+sudo nginx -s reload
 ```
 
 ## 3. Spring Boot Behind nginx
