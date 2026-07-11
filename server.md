@@ -1,115 +1,143 @@
-## update software
+# Server Setup Manual
+
+This manual covers basic Debian server setup, nginx hosting, a Spring Boot
+service behind nginx, and Raspberry Pi OS setup for FR24, readsb, and Pi-hole.
+
+Replace example values before running commands:
+
+- `remochan`: login user
+- `fractal.polyomino.jp`: domain name
+- `192.168.20.102`: Raspberry Pi IP address
+- `2222`: SSH port
+
+## 1. Basic Debian Setup
+
+Run these commands as `root` or with `sudo`.
+
+### Update Packages
 
 ```bash
 apt update
 apt upgrade
 ```
 
-## install fundamental software
+### Install Basic Tools
 
 ```bash
-apt install sudo vim tmux curl zsh
+apt install sudo vim tmux curl zsh git
 ```
 
-## create user
+### Create a User
 
 ```bash
 useradd -m remochan
 adduser remochan sudo
-# usermod -aG sudo Lacia
 passwd remochan
 ```
 
-## enable SSH Key
+### Configure SSH Keys
 
-```zsh
-mkdir /home/remochan/.ssh
-vim /home/remochan/.ssh/authorized_keys
-```
-
-### client setting
-
-⚠ Settings for connecting **clients** (local computer)
+On the server:
 
 ```bash
-vim ~/.ssh/config
+mkdir -p /home/remochan/.ssh
+vim /home/remochan/.ssh/authorized_keys
+chown -R remochan:remochan /home/remochan/.ssh
+chmod 700 /home/remochan/.ssh
+chmod 600 /home/remochan/.ssh/authorized_keys
 ```
 
-```
+On the client machine, edit `~/.ssh/config`:
+
+```sshconfig
 Host remochan_server
   HostName _._._._
-  port 22
-  user remochan
+  Port 2222
+  User remochan
   IdentityFile ~/.ssh/id_ed25519
 ```
 
-## change shell
+### Change the Login Shell
 
 ```bash
-chsh -s /usr/bin/zsh
+chsh -s /usr/bin/zsh remochan
 ```
 
-## update SSH
+### Harden SSH
 
-```zsh
+Edit `/etc/ssh/sshd_config`:
+
+```bash
 sudo vim /etc/ssh/sshd_config
 ```
 
-add or fix your config file
+Set these values:
 
+```sshconfig
+Port 2222
+PermitRootLogin no
+PasswordAuthentication no
 ```
- Port 2222
- PermitRootLogin no
- PasswordAuthentication no
+
+Restart SSH after confirming the config:
+
+```bash
+sudo sshd -t
+sudo systemctl restart ssh
 ```
 
-CentOS
+Keep the current SSH session open until a new login succeeds.
 
-```zsh
+### Open the SSH Port on CentOS
+
+Use this only on CentOS or compatible systems.
+
+```bash
 yum install policycoreutils-python-utils
 semanage port -a -t ssh_port_t -p tcp 2222
 firewall-cmd --zone=public --add-port=2222/tcp --permanent
 firewall-cmd --reload
 ```
 
-## lock root account
+### Lock the Root Account
 
-```zsh
+```bash
 sudo usermod -L root
 ```
 
-## environment setup
+### Install Dotfiles
 
-```zsh
-sudo apt install git
-git clone https://github.com/ipolyomino/dotfiles/
+```bash
+git clone https://github.com/iPolyomino/dotfiles ~/.dotfiles
 ln -sf ~/.dotfiles/.zshrc ~
 ln -sf ~/.dotfiles/.zsh ~
 ln -sf ~/.dotfiles/.vimrc ~
 ```
 
-## run webserver
+## 2. nginx Static Site
 
-```zsh
+### Install and Start nginx
+
+```bash
 sudo apt install nginx
-sudo service nginx start
+sudo systemctl enable --now nginx
 ```
 
-### update index page
+### Create an Index Page
 
-```zsh
-sudo rm /var/www/html/index.nginx-debian.html
+```bash
+sudo rm -f /var/www/html/index.nginx-debian.html
 sudo vim /var/www/html/index.html
 ```
 
-and edit
+Example:
 
-```index.html
+```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>my cool website</title>
+    <title>My Website</title>
   </head>
   <body>
     Hello, World!
@@ -117,35 +145,34 @@ and edit
 </html>
 ```
 
-### domain setting
+### Configure DNS
 
-add a new record in "A record" with your IP address
+Create an `A` record for the domain and point it to the server IP address.
 
-### update nginx settings
+### Configure nginx
 
-delete default settins
+Remove the default site:
 
-```zsh
-sudo rm /etc/nginx/sites-available/default
-sudo unlink /etc/nginx/sites-enable/default
+```bash
+sudo rm -f /etc/nginx/sites-available/default
+sudo unlink /etc/nginx/sites-enabled/default
 ```
 
-create new website setting files
+Create `/etc/nginx/sites-available/fractal.polyomino.jp.conf`:
 
-```zsh
+```bash
 sudo vim /etc/nginx/sites-available/fractal.polyomino.jp.conf
 ```
 
-example of config file
-https://www.nginx.com/resources/wiki/start/topics/examples/full/
+Example:
 
-```
+```nginx
 server {
     listen 80;
     listen [::]:80;
 
     server_name fractal.polyomino.jp;
-    access_log  /var/log/nginx/fractal.polyomino.jp;
+    access_log /var/log/nginx/fractal.polyomino.jp.access.log;
 
     root /var/www/html;
     index index.html;
@@ -158,42 +185,46 @@ server {
 }
 ```
 
-finally create symbolic link in "sites-available" directory and reload settins
+Enable the site and reload nginx:
 
-```zsh
-sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-available/
-sudo nginx -s reload
+```bash
+sudo ln -sf /etc/nginx/sites-available/fractal.polyomino.jp.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
 ```
 
-## web application server settings
+## 3. Spring Boot Behind nginx
 
-### Spring Boot application
+### Install Runtime Packages
 
-install Java Runtime Environment(jre)
-
-```zsh
-sudo apt install rsync
-sudo apt install openjdk-11-jre
-sudo mkdir /var/www/fractal.polyomino.jp
+```bash
+sudo apt install rsync openjdk-11-jre
+sudo mkdir -p /var/www/fractal.polyomino.jp
 sudo chown remochan:remochan /var/www/fractal.polyomino.jp
 ```
 
-⚠ build application (local computer)
+### Build and Deploy the Application
 
-```zsh
+Run this on the client or build machine:
+
+```bash
 ./mvnw release:clean package
-rsync target/fractal-0.0.1-SNAPSHOT.jar remochan:/var/www/fractal.polyomino.jp
+rsync target/fractal-0.0.1-SNAPSHOT.jar remochan_server:/var/www/fractal.polyomino.jp/
 ```
 
-### create reverse proxy
+### Configure nginx as a Reverse Proxy
 
-```zsh
+Edit `/etc/nginx/sites-available/fractal.polyomino.jp.conf`:
+
+```bash
 sudo vim /etc/nginx/sites-available/fractal.polyomino.jp.conf
 ```
 
-```
+Example:
+
+```nginx
 upstream springbootapp {
-    server localhost:8888;
+    server 127.0.0.1:8888;
 }
 
 server {
@@ -201,47 +232,58 @@ server {
     listen [::]:80;
 
     server_name fractal.polyomino.jp;
-    access_log  /var/log/nginx/fractal.polyomino.jp;
+    access_log /var/log/nginx/fractal.polyomino.jp.access.log;
 
     autoindex off;
     server_tokens off;
-    add_header X-XSS-Protection "1; mode=block";
+
     add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-Content-Type-Options nosniff;
+    add_header X-Content-Type-Options "nosniff";
 
-    client_max_body_size 1k;
+    client_max_body_size 1m;
 
-    proxy_redirect      off;
-    proxy_set_header    Host                $host;
-    proxy_set_header    X-Real-IP           $remote_addr;
-    proxy_set_header    X-Forwarded-Host    $host;
-    proxy_set_header    X-Forwarded-Server  $host;
-    proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+    proxy_redirect off;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Host $host;
+    proxy_set_header X-Forwarded-Server $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
     location / {
-        proxy_pass      http://springbootapp/;
+        proxy_pass http://springbootapp/;
     }
 
     error_page 401 402 403 404 /error.html;
     error_page 501 502 503 504 /error.html;
 }
-
 ```
 
-### create service
+Validate and reload nginx:
 
-```zsh
+```bash
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### Create a systemd Service
+
+Create `/etc/systemd/system/springbootapp.service`:
+
+```bash
 sudo vim /etc/systemd/system/springbootapp.service
 ```
 
-```
+Example:
+
+```ini
 [Unit]
-Description=SpringBoot Service
+Description=Spring Boot Application
+After=network.target
 
 [Service]
-User=nobody
+User=remochan
 WorkingDirectory=/var/www/fractal.polyomino.jp
-ExecStart=/usr/bin/java -Xmx256m -jar /var/www/fractal.polyomino.jp/fractal-0.0.1-SNAPSHOT.jar --s    erver.port=8888
+ExecStart=/usr/bin/java -Xmx256m -jar /var/www/fractal.polyomino.jp/fractal-0.0.1-SNAPSHOT.jar --server.port=8888
 SuccessExitStatus=143
 TimeoutStopSec=10
 Restart=on-failure
@@ -251,260 +293,200 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-```zsh
+Enable and start the service:
+
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable springbootapp.service
-sudo systemctl status
-```
-
-### start in server
-
-```zsh
 sudo systemctl start springbootapp.service
-sudo systemctl status
+sudo systemctl status springbootapp.service
 ```
 
-### install database
+### Install MariaDB
 
-```zsh
+```bash
 sudo apt install mariadb-server
 sudo systemctl restart springbootapp.service
 ```
 
-### enable https
+## 4. HTTPS with Let's Encrypt
 
-https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/
+Install Certbot:
 
-```zsh
-sudo apt install certbot
-sudo apt install python3-certbot-nginx
-certbot --nginx
-sudo vim /etc/nginx/sites-available/fractal.polyomino.jp.conf
+```bash
+sudo apt install certbot python3-certbot-nginx
 ```
 
-```
-    listen 443 ssl;
-    ssl_certificate     /etc/letsencrypt/live/fractal.polyomino.jp/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/fractal.polyomino.jp/privkey.pem;
+Issue and install a certificate:
 
-    include /etc/letsencrypt/options-ssl-nginx.conf;
-    if ($scheme != "https") {
-        return 301 https://$host$request_uri;
-    }
+```bash
+sudo certbot --nginx
 ```
 
-#### auto update certificate
+Certbot usually updates the nginx config automatically. If manual settings are
+needed, add the certificate paths to the server block:
 
-```zsh
-crontab -e
+```nginx
+listen 443 ssl;
+ssl_certificate /etc/letsencrypt/live/fractal.polyomino.jp/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/fractal.polyomino.jp/privkey.pem;
+
+include /etc/letsencrypt/options-ssl-nginx.conf;
 ```
 
-and add schedule
+Test renewal:
 
+```bash
+sudo certbot renew --dry-run
 ```
-0 0 8 * * root /usr/bin/certbot renew --quiet --post-hook "systemctl reload nginx"
-```
 
-Raspberry Pi OS
+## 5. Raspberry Pi OS Base Settings
 
-```zsh
+Open Raspberry Pi configuration:
+
+```bash
 sudo raspi-config
 ```
-- System Options → Boot / Auto Login → Console
-- Interfacing Options → SSH
 
+Recommended settings:
 
-# Raspberry Pi OS Trixie 64-bit に FR24・readsb・Pi-hole を構築する手順
+- `System Options` -> `Boot / Auto Login` -> `Console`
+- `Interfacing Options` -> `SSH`
 
-対象環境：
+## 6. Raspberry Pi FR24, readsb, and Pi-hole
+
+Target environment:
 
 ```text
 Raspberry Pi 4 Model B
 Raspberry Pi OS 64-bit
 Debian 13 Trixie
-RTL-SDR USBドングル
+RTL-SDR USB dongle
 ```
 
-構成：
+ADS-B flow:
 
 ```text
-RTL-SDR USBドングル
-        ↓
-readsb
-        ↓ Beast TCP / 30005
-fr24feed
-        ↓
-Flightradar24
+RTL-SDR USB dongle
+  -> readsb
+  -> Beast TCP port 30005
+  -> fr24feed
+  -> Flightradar24
 ```
 
-DNS構成：
+DNS flow:
 
 ```text
-LAN内端末
-   ↓
-RTX830からDNS配布
-   ↓
-Pi-hole
-   ↓
-上流DNS
+LAN clients
+  -> DNS distributed by RTX830
+  -> Pi-hole
+  -> upstream DNS
 ```
 
----
+### Check the OS and USB Dongle
 
-# 1. 事前確認
-
-OSとCPUアーキテクチャを確認する。
-
-```sh
+```bash
 cat /etc/os-release
 uname -m
+lsusb
 ```
 
-想定：
+Expected values:
 
 ```text
 VERSION_CODENAME=trixie
 aarch64
 ```
 
-USBドングルを接続し、認識を確認する。
+### Install FR24 Feeder
 
-```sh
-lsusb
-```
+Run the official installer:
 
----
-
-# 2. FR24 feederをインストール
-
-FR24公式インストーラーを実行する。
-
-```sh
+```bash
 wget -qO- https://fr24.com/install.sh | sudo bash -s
 ```
 
-初回設定では、ひとまず次のように選択する。
+Initial settings:
 
 ```text
-Receiver:
-1 - DVBT Stick (USB)
-
-Additional dump1090 arguments:
-空欄
-
-RAW data feed port 30002:
-no
-
-Basestation data feed port 30003:
-no
+Receiver: 1 - DVBT Stick (USB)
+Additional dump1090 arguments: empty
+RAW data feed port 30002: no
+Basestation data feed port 30003: no
 ```
 
-設定後、サービスを有効化する。
+Enable the service:
 
-```sh
+```bash
 sudo systemctl enable fr24feed
 sudo systemctl restart fr24feed
-```
-
-状態確認：
-
-```sh
 sudo systemctl status fr24feed --no-pager
 fr24feed-status
 ```
 
-Trixie 64-bit環境では、FR24インストーラーが32bit armhf版の古い `dump1090-mutability` を入れることがある。
-
-次のように `Receiver: down` となる場合は、以降のreadsb構成へ切り替える。
+On Trixie 64-bit, the installer may install an old 32-bit
+`dump1090-mutability` package. If `fr24feed-status` shows this, switch to the
+readsb setup below:
 
 ```text
 FR24 Link: connected
 Receiver: down
 ```
 
----
+### Check dump1090-mutability
 
-# 3. dump1090-mutabilityの問題を確認
-
-```sh
+```bash
 file /usr/bin/dump1090-mutability
 ```
 
-次のように表示される場合、32bit armhf版である。
+If it shows `ELF 32-bit LSB` and `ARM EABI5`, it is an armhf binary and may not
+run on a 64-bit OS. A typical error is:
 
 ```text
-ELF 32-bit LSB
-ARM EABI5
-interpreter /lib/ld-linux-armhf.so.3
+sudo: unable to execute /usr/bin/dump1090-mutability: No such file or directory
 ```
 
-現在のOSがarm64なら、そのままでは実行できない。
+### Remove Old dump1090-mutability
 
-実行時に次のエラーになることがある。
-
-```text
-sudo: unable to execute /usr/bin/dump1090-mutability:
-No such file or directory
-```
-
----
-
-# 4. 古いdump1090-mutabilityを削除
-
-FR24を停止する。
-
-```sh
+```bash
 sudo systemctl stop fr24feed
-```
-
-パッケージを削除する。
-
-```sh
 sudo apt remove dump1090-mutability:armhf
 sudo apt --fix-broken install
 sudo apt autoremove
 ```
 
-削除できない場合：
+If removal fails:
 
-```sh
-sudo dpkg --remove --force-remove-reinstreq \
-  dump1090-mutability:armhf
-
+```bash
+sudo dpkg --remove --force-remove-reinstreq dump1090-mutability:armhf
 sudo apt --fix-broken install
 ```
 
-残った設定も削除する場合：
+To remove leftover configuration:
 
-```sh
+```bash
 sudo apt purge dump1090-mutability:armhf
 ```
 
-確認：
+Check the package state:
 
-```sh
+```bash
 dpkg -l | grep -E 'dump1090|readsb|rtl-sdr'
 ```
 
-`dump1090-mutability:armhf` が `rc` の場合、本体は削除済みで設定だけ残っている。
+If `dump1090-mutability:armhf` is marked `rc`, the package body is removed and
+only configuration files remain.
 
----
+### Install and Test RTL-SDR Tools
 
-# 5. RTL-SDRツールをインストール
-
-```sh
+```bash
 sudo apt update
 sudo apt install rtl-sdr
-```
-
-USBドングルをテストする。
-
-```sh
 sudo systemctl stop fr24feed
 rtl_test -t
 ```
 
-正常な例：
+Normal output:
 
 ```text
 Found 1 device(s):
@@ -514,204 +496,114 @@ Using device 0: Generic RTL2832U OEM
 Found Rafael Micro R820T tuner
 ```
 
-次の表示は、R820Tチューナーを使っている場合は異常ではない。
+For an R820T tuner, this message is not a problem:
 
 ```text
 No E4000 tuner found, aborting.
 ```
 
----
+### Try the Debian readsb Package
 
-# 6. Debian版readsbをインストール
-
-```sh
+```bash
 sudo apt install readsb rtl-sdr
-```
-
-サービスを起動する。
-
-```sh
 sudo systemctl enable --now readsb
 sudo systemctl status readsb --no-pager
 ```
 
-Trixieのパッケージ版readsbがRTL-SDR対応なしでビルドされている場合、起動に失敗する。
+If the Trixie package was built without RTL-SDR support, it may fail. Check logs:
 
-ログ確認：
-
-```sh
+```bash
 sudo journalctl -u readsb -b -n 100 --no-pager
 ```
 
-次のようなエラーなら、RTL-SDR非対応版である。
+Unsupported RTL-SDR examples:
 
 ```text
 SDR type '0' not recognized
 ERROR: Unknown device type:0
 ```
 
-また、対応デバイス一覧に `rtlsdr` が表示されない。
+If `rtlsdr` is missing from the supported SDR list, build readsb from source.
 
-```text
-supported SDR types are:
-  modesbeast
-  gnshulc
-  ifile
-  none
-```
+### Build readsb with RTL-SDR Support
 
-この場合はreadsbをRTL-SDR対応でソースビルドする。
+Install build dependencies:
 
----
-
-# 7. readsbのビルド依存関係を入れる
-
-```sh
+```bash
 sudo apt update
-
-sudo apt install -y \
-  git \
-  build-essential \
-  pkg-config \
-  libusb-1.0-0-dev \
-  librtlsdr-dev \
-  libzstd-dev \
-  zlib1g-dev \
-  libncurses-dev
+sudo apt install -y git build-essential pkg-config libusb-1.0-0-dev librtlsdr-dev libzstd-dev zlib1g-dev libncurses-dev
 ```
 
----
+Build readsb:
 
-# 8. readsbをRTL-SDR対応でビルド
-
-```sh
+```bash
 cd /tmp
-
 git clone https://github.com/wiedehopf/readsb.git
-
 cd /tmp/readsb
-```
-
-ビルドする。
-
-```sh
 make clean
 make RTLSDR=yes
 ```
 
-次のエラーが出る場合：
+If `zstd.h` is missing:
 
-```text
-fatal error: zstd.h: No such file or directory
-```
-
-対応：
-
-```sh
+```bash
 sudo apt install libzstd-dev
 ```
 
-次のエラーが出る場合：
+If `curses.h` is missing:
 
-```text
-fatal error: curses.h: No such file or directory
-```
-
-対応：
-
-```sh
+```bash
 sudo apt install libncurses-dev
 ```
 
-依存関係を追加した後、再ビルドする。
+Rebuild after installing missing dependencies:
 
-```sh
+```bash
 make clean
 make RTLSDR=yes
 ```
 
----
+Confirm RTL-SDR support:
 
-# 9. RTL-SDR対応を確認
-
-```sh
+```bash
 ./readsb --help | grep -A10 'device-type'
 ```
 
-次が表示されれば成功。
+Expected output includes:
 
 ```text
 use with --device-type rtlsdr
 ```
 
----
+### Test the Built readsb Binary
 
-# 10. ビルドしたreadsbを手動テスト
-
-既存サービスを停止する。
-
-```sh
+```bash
 sudo systemctl stop fr24feed
 sudo systemctl stop readsb
-```
-
-手動起動する。
-
-```sh
 cd /tmp/readsb
-
-sudo ./readsb \
-  --device-type rtlsdr \
-  --device 0 \
-  --interactive
+sudo ./readsb --device-type rtlsdr --device 0 --interactive
 ```
 
-航空機一覧が表示されれば受信できている。
+If aircraft appear, reception is working. Press `Ctrl + C` to stop.
 
-終了：
+### Install the Built readsb Binary
 
-```text
-Ctrl + C
-```
-
----
-
-# 11. ビルド版readsbをインストール
-
-```sh
+```bash
 cd /tmp/readsb
-
-sudo install -m 755 \
-  ./readsb \
-  /usr/local/bin/readsb
+sudo install -m 755 ./readsb /usr/local/bin/readsb
+/usr/local/bin/readsb --help | grep -A10 'device-type'
 ```
 
-確認：
+### Use the Built Binary from systemd
 
-```sh
-/usr/local/bin/readsb --help |
-  grep -A10 'device-type'
+Create a systemd drop-in:
+
+```bash
+sudo mkdir -p /etc/systemd/system/readsb.service.d
+sudo vim /etc/systemd/system/readsb.service.d/override.conf
 ```
 
----
-
-# 12. systemdでビルド版readsbを使用
-
-Debianパッケージのサービスは `/usr/bin/readsb` を使うため、systemdのdrop-in設定で上書きする。
-
-```sh
-sudo mkdir -p \
-  /etc/systemd/system/readsb.service.d
-```
-
-設定ファイルを作る。
-
-```sh
-sudo vim \
-  /etc/systemd/system/readsb.service.d/override.conf
-```
-
-内容：
+Content:
 
 ```ini
 [Service]
@@ -719,51 +611,23 @@ ExecStart=
 ExecStart=/usr/local/bin/readsb $RECEIVER_OPTIONS $DECODER_OPTIONS $NET_OPTIONS $JSON_OPTIONS --write-json /run/readsb --quiet
 ```
 
-反映：
+Reload and restart:
 
-```sh
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable readsb
 sudo systemctl restart readsb
 ```
 
-確認：
+Verify the override:
 
-```sh
+```bash
 systemctl cat readsb
-```
-
-末尾に次が表示されることを確認する。
-
-```ini
-# /etc/systemd/system/readsb.service.d/override.conf
-
-[Service]
-ExecStart=
-ExecStart=/usr/local/bin/readsb ...
-```
-
-実際の実行コマンドを確認する。
-
-```sh
-systemctl show readsb \
-  -p ExecStart \
-  --no-pager
-```
-
-状態確認：
-
-```sh
+systemctl show readsb -p ExecStart --no-pager
 sudo systemctl status readsb --no-pager
 ```
 
-正常な例：
-
-```text
-Active: active (running)
-```
-
-ログには次のような表示が出る。
+Normal logs include:
 
 ```text
 rtlsdr: using device #0
@@ -771,60 +635,44 @@ Detached kernel driver
 Found Rafael Micro R820T tuner
 ```
 
----
+### Check the Beast Output Port
 
-# 13. readsbのBeast出力を確認
-
-```sh
+```bash
 sudo ss -lntp | grep 30005
 ```
 
-正常な例：
+Normal output:
 
 ```text
 LISTEN 0 4096 0.0.0.0:30005
 LISTEN 0 4096 [::]:30005
 ```
 
-`30005/TCP` はBeast binary形式の出力ポート。
+Port `30005/TCP` is the Beast binary output port.
 
----
+### Connect FR24 to readsb
 
-# 14. FR24をreadsbへ接続
+Reconfigure FR24:
 
-FR24設定をやり直す。
-
-```sh
+```bash
 sudo fr24feed --reconfigure
 ```
 
-受信機は次を選ぶ。
+Use these settings:
 
 ```text
-4 - ModeS Beast
-```
-
-接続方式：
-
-```text
-1 - Network connection
-```
-
-接続先：
-
-```text
+Receiver: 4 - ModeS Beast
+Connection: 1 - Network connection
 Host: 127.0.0.1
 Port: 30005
 ```
 
-設定ファイルは概ね次になる。
+The config should look like one of these forms:
 
 ```ini
 receiver="beast-tcp"
 host="127.0.0.1:30005"
 ```
-
-FR24のバージョンによっては次の形式になることもある。
 
 ```ini
 receiver="beast-tcp"
@@ -832,41 +680,31 @@ host="127.0.0.1"
 port="30005"
 ```
 
-Sharing Keyを確認する。
+Check the sharing key:
 
-```sh
+```bash
 sudo grep '^fr24key=' /etc/fr24feed.ini
 ```
 
-値が空なら、旧環境のSharing Keyを設定する。
+Do not publish the sharing key. If it is empty, copy the sharing key from the
+old environment.
 
-Sharing Keyは外部へ公開しないこと。
+Validate and restart:
 
-設定検証：
-
-```sh
-sudo /usr/bin/fr24feed \
-  --validate-config \
-  --config-file=/etc/fr24feed.ini
-```
-
-起動：
-
-```sh
+```bash
+sudo /usr/bin/fr24feed --validate-config --config-file=/etc/fr24feed.ini
 sudo systemctl reset-failed fr24feed
 sudo systemctl enable fr24feed
 sudo systemctl restart fr24feed
 ```
 
----
+### Check FR24
 
-# 15. FR24の動作確認
-
-```sh
+```bash
 fr24feed-status
 ```
 
-正常な例：
+Normal output:
 
 ```text
 FR24 Feeder/Decoder Process: running.
@@ -876,25 +714,25 @@ FR24 Tracked AC: 3.
 Receiver: connected (2064 MSGS/0 SYNC).
 ```
 
-確認ポイント：
+Check these fields:
 
 ```text
 FR24 Feeder/Decoder Process: running
 FR24 Link: connected
 Receiver: connected
-FR24 Tracked AC: 1以上
+FR24 Tracked AC: 1 or more
 ```
 
-Beast TCP構成では `0 SYNC` のままでも、`Tracked AC` が増えていれば受信・デコード・送信は成立している。
+With Beast TCP, `0 SYNC` can be acceptable if `Tracked AC` increases.
 
-自動起動確認：
+Check automatic startup:
 
-```sh
+```bash
 systemctl is-enabled readsb fr24feed
 systemctl is-active readsb fr24feed
 ```
 
-期待値：
+Expected output:
 
 ```text
 enabled
@@ -903,169 +741,119 @@ active
 active
 ```
 
----
+## 7. Pi-hole
 
-# 16. Pi-holeのインストール前確認
+### Prepare the Raspberry Pi
 
-Raspberry PiのIPアドレスを確認する。
+Check the IP address and route:
 
-```sh
+```bash
 ip -br addr
 ip route
 ```
 
-Pi-holeを使用するRaspberry Piには、固定IPまたはルーター側のDHCP予約を設定しておく。
-
-例：
+Use a static IP address or a DHCP reservation on the router. Example:
 
 ```text
 192.168.20.102
 ```
 
-ポート53の競合を確認する。
+Check for port 53 conflicts:
 
-```sh
+```bash
 sudo ss -lntup | grep ':53 '
 ```
 
-何も表示されなければ、そのまま進められる。
+If there is no output, continue.
 
----
+### Install Pi-hole
 
-# 17. Pi-holeをインストール
-
-公式インストーラーを取得する。
-
-```sh
+```bash
 cd /tmp
-
-wget -O basic-install.sh \
-  https://install.pi-hole.net
-```
-
-必要なら内容を確認する。
-
-```sh
+wget -O basic-install.sh https://install.pi-hole.net
 less basic-install.sh
-```
-
-実行：
-
-```sh
 sudo bash basic-install.sh
 ```
 
-設定例：
+Example settings:
 
 ```text
-Interface:
-eth0
-
-IP address:
-192.168.20.102
-
-Upstream DNS:
-Quad9
-
-Web admin interface:
-Yes
-
-Query logging:
-Yes
-
-Pi-hole DHCP server:
-No
+Interface: eth0
+IP address: 192.168.20.102
+Upstream DNS: Quad9
+Web admin interface: Yes
+Query logging: Yes
+Pi-hole DHCP server: No
 ```
 
-RTX830など別のルーターがDHCPを担当している場合、Pi-holeのDHCP機能は有効にしない。
+If another router, such as an RTX830, provides DHCP, do not enable Pi-hole DHCP.
 
----
+### Check Pi-hole
 
-# 18. Pi-holeの状態確認
-
-```sh
+```bash
 pihole status
-```
-
-サービス確認：
-
-```sh
-sudo systemctl status \
-  pihole-FTL \
-  --no-pager
-```
-
-DNSポート確認：
-
-```sh
+sudo systemctl status pihole-FTL --no-pager
 sudo ss -lntup | grep ':53 '
 ```
 
-DNS問い合わせテスト：
+Test DNS:
 
-```sh
+```bash
 dig example.com @127.0.0.1
 dig example.com @192.168.20.102
 ```
 
-`dig` がない場合：
+Install `dig` if needed:
 
-```sh
+```bash
 sudo apt install dnsutils
 ```
 
-管理画面：
+Admin URL:
 
 ```text
 http://192.168.20.102/admin/
 ```
 
----
+### Change the Pi-hole Password
 
-# 19. Pi-holeの管理パスワード変更
+For Pi-hole v6:
 
-Pi-hole v6：
-
-```sh
+```bash
 sudo pihole setpassword
 ```
 
-対話形式で新しいパスワードを入力する。
+Enter the password interactively. Do not put the password directly in the
+command line because it can remain in shell history.
 
-パスワードをコマンド引数へ直接書くとシェル履歴へ残るため、対話形式を推奨する。
+### Restore Pi-hole Settings
 
----
-
-# 20. Pi-hole設定を復元
-
-旧Pi-holeのTeleporterバックアップがある場合、管理画面から復元する。
+If you have a Teleporter backup from an old Pi-hole instance, restore it from
+the admin UI:
 
 ```text
-Settings
-→ Teleporter
-→ Import
+Settings -> Teleporter -> Import
 ```
 
-復元後に確認する項目：
+Check these settings after restore:
 
 ```text
-上流DNS
+Upstream DNS
 Listen interface
 Local DNS Records
 Conditional Forwarding
-広告リスト
-許可リスト
-拒否リスト
-DHCP機能が無効であること
+Adlists
+Allowlist
+Denylist
+DHCP server is disabled
 ```
 
----
+### Distribute Pi-hole DNS from the Router
 
-# 21. ルーターからPi-holeをDNSとして配布
+After Pi-hole works, configure the router DHCP settings to distribute the
+Pi-hole IP address as DNS.
 
-Pi-holeの動作確認が終わってから、ルーターのDHCP設定でPi-holeのIPアドレスをDNSとして配布する。
-
-RTX830の例：
+RTX830 example:
 
 ```text
 administrator
@@ -1074,45 +862,46 @@ dhcp scope option 20 dns=192.168.20.102
 save
 ```
 
-確認：
+Check the router config:
 
 ```text
 show config | grep "dhcp scope option"
 ```
 
-クライアント端末はWi-Fi再接続またはDHCPリース更新を行う。
+Reconnect Wi-Fi or renew the DHCP lease on clients.
 
-macOSのDNSキャッシュ削除：
+On macOS, flush the DNS cache:
 
-```sh
+```bash
 sudo dscacheutil -flushcache
 sudo killall -HUP mDNSResponder
 ```
 
-Pi-holeで問い合わせを確認する。
+Watch Pi-hole queries:
 
-```sh
+```bash
 pihole tail
 ```
 
----
+## 8. Final Checks
 
-# 22. 再起動後の最終確認
+Reboot:
 
-```sh
+```bash
 sudo reboot
 ```
 
-再接続後：
+After reconnecting:
 
-```sh
-systemctl is-active \
-  readsb \
-  fr24feed \
-  pihole-FTL
+```bash
+systemctl is-active readsb fr24feed pihole-FTL
+fr24feed-status
+pihole status
+sudo systemctl status readsb --no-pager
+sudo ss -lntup | grep -E ':53 |:30005'
 ```
 
-期待値：
+Expected service state:
 
 ```text
 active
@@ -1120,123 +909,63 @@ active
 active
 ```
 
-FR24確認：
+## 9. Maintenance Commands
 
-```sh
-fr24feed-status
-```
+### readsb
 
-Pi-hole確認：
-
-```sh
-pihole status
-```
-
-readsb確認：
-
-```sh
+```bash
 sudo systemctl status readsb --no-pager
-```
-
-ポート確認：
-
-```sh
-sudo ss -lntup |
-  grep -E ':53 |:30005'
-```
-
----
-
-# 23. 保守用コマンド
-
-## readsb
-
-```sh
-sudo systemctl status readsb --no-pager
-
-sudo journalctl \
-  -u readsb \
-  -b \
-  -n 100 \
-  --no-pager
-
+sudo journalctl -u readsb -b -n 100 --no-pager
 sudo ss -lntp | grep 30005
 ```
 
-## FR24
+### FR24
 
-```sh
+```bash
 fr24feed-status
-
-sudo systemctl status \
-  fr24feed \
-  --no-pager
-
-sudo journalctl \
-  -u fr24feed \
-  -b \
-  -n 100 \
-  --no-pager
+sudo systemctl status fr24feed --no-pager
+sudo journalctl -u fr24feed -b -n 100 --no-pager
 ```
 
-## Pi-hole
+### Pi-hole
 
-```sh
+```bash
 pihole status
-
-sudo systemctl status \
-  pihole-FTL \
-  --no-pager
-
+sudo systemctl status pihole-FTL --no-pager
 pihole tail
 ```
 
----
+### Rebuild readsb
 
-# 24. readsbを更新・再ビルドする場合
+`/usr/local/bin/readsb` is not managed by APT. Rebuild it manually when needed:
 
-`/usr/local/bin/readsb` はAPTでは更新されないため、必要に応じて手動で再ビルドする。
-
-```sh
+```bash
 cd /tmp
-
 rm -rf readsb
-
-git clone \
-  https://github.com/wiedehopf/readsb.git
-
+git clone https://github.com/wiedehopf/readsb.git
 cd readsb
-
 make clean
 make RTLSDR=yes
-
-sudo install -m 755 \
-  ./readsb \
-  /usr/local/bin/readsb
-
+sudo install -m 755 ./readsb /usr/local/bin/readsb
 sudo systemctl restart readsb
 ```
 
-確認：
+Verify:
 
-```sh
-/usr/local/bin/readsb --help |
-  grep -A10 'device-type'
-
+```bash
+/usr/local/bin/readsb --help | grep -A10 'device-type'
 sudo systemctl status readsb --no-pager
 ```
 
----
+## 10. Notes
 
-# 25. 注意事項
-
-* `/etc/fr24feed.ini` の `fr24key` は公開しない。
-* RTL-SDRドングルを複数のプロセスから同時に開かない。
-* USBドングルを使用するのは `readsb`。
-* `fr24feed` はUSBドングルを直接使わず、`127.0.0.1:30005` のBeast TCP出力を受信する。
-* FR24の設定は `receiver="beast-tcp"` を使用する。
-* `receiver="dvbt"` に戻すと、古い `dump1090-mutability` を使おうとして動作しない可能性がある。
-* `/usr/local/bin/readsb` はAPT管理外のため、更新は手動で行う。
-* Pi-hole用Raspberry PiのIPアドレスは固定する。
-* ルーターがDHCPを担当する場合、Pi-holeのDHCP機能は有効にしない。
-* Pi-holeが正常に動作するまでは、ルーターの配布DNSをPi-holeへ切り替えない。
+- Do not publish `fr24key` from `/etc/fr24feed.ini`.
+- Do not let multiple processes open the RTL-SDR dongle at the same time.
+- `readsb` owns the RTL-SDR dongle.
+- `fr24feed` should read Beast TCP from `127.0.0.1:30005`.
+- Use `receiver="beast-tcp"` for FR24.
+- Avoid switching FR24 back to `receiver="dvbt"` on Trixie 64-bit.
+- `/usr/local/bin/readsb` is outside APT management.
+- Use a fixed IP address for the Pi-hole Raspberry Pi.
+- If the router provides DHCP, keep Pi-hole DHCP disabled.
+- Do not switch router DNS to Pi-hole until Pi-hole has passed local tests.
